@@ -29,7 +29,8 @@ public class HdfsExample {
     private static final String PATH_TO_CORE_SITE_XML =  System.getProperty("user.dir") + File.separator + "conf"
             + File.separator + "core-site.xml";
 
-    private static final String PRNCIPAL_NAME = "hdfsDeveloper";
+//    private static final String PRNCIPAL_NAME = "hdfsDeveloper";
+    private static final String PRNCIPAL_NAME = "developuser";
 
     private static final String PATH_TO_KEYTAB = System.getProperty("user.dir") + File.separator + "conf"
             + File.separator + "user.keytab";
@@ -64,11 +65,11 @@ public class HdfsExample {
         hdfsExample.test();
 
         // 业务示例2：多线程
-        final int threadCount = 2;
-        for (int threadNum = 0; threadNum < threadCount; threadNum++) {
-            HdfsExampleThread exampleThread = new HdfsExampleThread("hdfs_example_" + threadNum);
-            exampleThread.start();
-        }
+//        final int threadCount = 2;
+//        for (int threadNum = 0; threadNum < threadCount; threadNum++) {
+//            HdfsExampleThread exampleThread = new HdfsExampleThread("hdfs_example_" + threadNum);
+//            exampleThread.start();
+//        }
 
         // 业务示例3： 设置存储策略
         // System.out.println("begin to set Storage Policy");
@@ -114,26 +115,26 @@ public class HdfsExample {
         mkdir();
 
         // write file
-        write();
+//        write();
 
         // wait for writing complete
-        try {
-            Thread.sleep(2 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(2 * 1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         // append file
-        append();
+//        append();
 
         // read file
-        read();
+//        read();
 
         // delete file
-        delete();
+//        delete();
 
         // delete directory
-        rmdir();
+//        rmdir();
     }
 
     /**
