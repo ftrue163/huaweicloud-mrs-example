@@ -2,6 +2,8 @@ package com.huawei.bigdata.spark.examples;
 
 import com.huawei.hadoop.security.LoginUtil;
 
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
 import scala.Tuple3;
 
@@ -13,19 +15,65 @@ import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.sql.SparkSession;
 
+import java.io.File;
+
+
+/**
+
+-- 提交方式：yarn client
+/opt/client/Spark/spark/bin/spark-submit \
+--master yarn \
+--deploy-mode client \
+--class com.huawei.bigdata.spark.examples.FemaleInfoCollection \
+--name FemaleInfoCollection \
+/opt/data_projects/spark_data/spark_java_job/FemaleInfoCollection-1.0.jar \
+/tmp/spark/input/
+
+
+-- 提交方式：yarn cluster
+-- 注意：增加--files参数的原因，是不加此参数的话会报错此文件找不到；此文件找不到的原因还未知
+/opt/client/Spark/spark/bin/spark-submit \
+--master yarn \
+--deploy-mode cluster \
+--class com.huawei.bigdata.spark.examples.FemaleInfoCollection \
+--name FemaleInfoCollection \
+--files /opt/data_projects/spark_data/spark_java_job/conf/topology.properties \
+/opt/data_projects/spark_data/spark_java_job/FemaleInfoCollection-1.0.jar \
+/tmp/spark/input/
+
+ */
+
+
+
+
+
+
 public class FemaleInfoCollection {
     public static void main(String[] args) throws Exception {
-        String userPrincipal = "sparkuser";
-        String userKeytabPath = "/opt/FIclient/user.keytab";
-        String krb5ConfPath = "/opt/FIclient/KrbClient/kerberos/var/krb5kdc/krb5.conf";
+//        String userPrincipal = "sparkuser";
+        String userPrincipal = "devuser01";
+        String userKeytabPath = "/opt/data_projects/spark_data/spark_java_job/conf/user.keytab";
+        String krb5ConfPath = "/opt/data_projects/spark_data/spark_java_job/conf/krb5.conf";
+//      使用其它方式获取keytab和krb5文件的路径
+//        String userKeytabPath = System.getProperty("user.dir") + File.separator + "conf"
+//                + File.separator + "user.keytab";
+//        String krb5ConfPath = System.getProperty("user.dir") + File.separator + "conf"
+//                + File.separator + "krb5.conf";
         Configuration hadoopConf = new Configuration();
         LoginUtil.login(userPrincipal, userKeytabPath, krb5ConfPath, hadoopConf);
 
         // Create a configuration class SparkConf, and then create a SparkContext.
-        SparkSession spark = SparkSession.builder().appName("CollectFemaleInfo").getOrCreate();
+        SparkSession spark = SparkSession.builder()
+                .appName("CollectFemaleInfo")
+                .getOrCreate();
+//        SparkConf conf = new SparkConf().setAppName("CollectFemaleInfo").setMaster("local[1]");
+//        JavaSparkContext sc = new JavaSparkContext(conf);
+
 
         // Read the source file data, and transfer each row of records to an element of the RDD.
         JavaRDD<String> data = spark.read().textFile(args[0]).javaRDD();
+//        JavaRDD<String> data = spark.read().textFile("conf/log*.txt").javaRDD();
+//        JavaRDD<String> data = sc.textFile(args[0]);
 
         // Split each column of each record, and generate a Tuple.
         JavaRDD<Tuple3<String, String, Integer>> person =
@@ -115,5 +163,6 @@ public class FemaleInfoCollection {
         }
 
         spark.stop();
+//        sc.stop();
     }
 }
